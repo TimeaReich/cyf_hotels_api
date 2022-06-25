@@ -1,16 +1,23 @@
-const { query } = require("express");
-const { response } = require("express");
 const express = require("express");
 const app = express();
+const cors = require("cors");
+app.use(cors);
 app.use(express.json());
 const { Pool } = require("pg");
+
 const pool = new Pool({
-  user: "timea",
-  host: "localhost",
-  database: "cyf_hotels",
-  password: "password",
-  port: 5432,
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
+// const pool = new Pool({
+//   user: "timea",
+//   host: "localhost",
+//   database: "cyf_hotels",
+//   password: "password",
+//   port: 5432,
+// });
 app.get("/", (req, res) => {
   res.send("hi, i am working hard");
 });
@@ -45,10 +52,10 @@ app.get("/customers/:customerId", (req, res) => {
     });
 });
 app.get("/customers", (req, res) => {
-  const query = "SELECT name FROM customers ORDER BY customers.name asc";
+  const query = "SELECT * FROM customers ORDER BY customers.name asc";
   pool
     .query(query)
-    .then((response) => res.json(response))
+    .then((response) => res.json(response.rows))
     .catch((err) => {
       console.error(err);
       res.status(400).json(err);
@@ -135,6 +142,8 @@ app.delete("/customers/:customerId", (req, res) => {
       }
     });
 });
-app.listen(3000, function () {
-  console.log("Listening on port 3000");
+let port = process.env.PORT || 3000;
+console.log(port);
+app.listen(port, function () {
+  console.log(`Listening on port ${port}`);
 });
