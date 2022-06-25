@@ -1,9 +1,10 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
-app.use(cors);
-app.use(express.json());
 const { Pool } = require("pg");
+
+app.use(cors());
+app.use(express.json());
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -142,7 +143,7 @@ app.delete("/customers/:customerId", (req, res) => {
       }
     });
 });
-let port = process.env.PORT;
+let port = process.env.PORT || 3000;
 console.log(port);
 app.listen(port, function () {
   console.log(`Listening on port ${port}`);
